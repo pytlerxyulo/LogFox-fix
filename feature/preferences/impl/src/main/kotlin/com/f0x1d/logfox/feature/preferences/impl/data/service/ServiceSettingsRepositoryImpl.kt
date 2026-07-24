@@ -1,0 +1,25 @@
+package com.f0x1d.logfox.feature.preferences.impl.data.service
+
+import com.f0x1d.logfox.core.preferences.api.PreferenceStateFlow
+import com.f0x1d.logfox.core.preferences.impl.asPreferenceStateFlow
+import com.f0x1d.logfox.feature.preferences.api.data.ServiceSettingsRepository
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+internal class ServiceSettingsRepositoryImpl @Inject constructor(
+    private val localDataSource: ServiceSettingsLocalDataSource,
+) : ServiceSettingsRepository {
+
+    override fun startOnBoot(): PreferenceStateFlow<Boolean> = localDataSource.startOnBoot().asPreferenceStateFlow()
+
+    override fun showLogsFromAppLaunch(): PreferenceStateFlow<Boolean> = localDataSource.showLogsFromAppLaunch().asPreferenceStateFlow()
+
+    override fun includeDeviceInfoInArchives(): PreferenceStateFlow<Boolean> = localDataSource.includeDeviceInfoInArchives().asPreferenceStateFlow()
+
+    override fun includeAppInfoInExports(): PreferenceStateFlow<Boolean> = localDataSource.includeAppInfoInExports().asPreferenceStateFlow()
+
+    override fun stopLoggingOnBackExit(): PreferenceStateFlow<Boolean> = localDataSource.stopLoggingOnBackExit().asPreferenceStateFlow()
+
+    override fun exportLogsAsTxt(): PreferenceStateFlow<Boolean> = localDataSource.exportLogsAsTxt().asPreferenceStateFlow()
+}

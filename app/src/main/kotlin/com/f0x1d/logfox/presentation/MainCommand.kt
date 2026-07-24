@@ -1,0 +1,8 @@
+package com.f0x1d.logfox.presentation
+
+internal sealed interface MainCommand {
+    data object ShowSetup : MainCommand
+    data object MarkNotificationsPermissionAsked : MainCommand
+    data object BackPressedAtRoot : MainCommand
+    data object FinishActivityRequested : MainCommand
+}

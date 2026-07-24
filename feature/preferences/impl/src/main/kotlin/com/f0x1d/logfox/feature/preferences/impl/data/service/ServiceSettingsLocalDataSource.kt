@@ -1,0 +1,12 @@
+package com.f0x1d.logfox.feature.preferences.impl.data.service
+
+import com.fredporciuncula.flow.preferences.Preference
+
+internal interface ServiceSettingsLocalDataSource {
+    fun startOnBoot(): Preference<Boolean>
+    fun showLogsFromAppLaunch(): Preference<Boolean>
+    fun includeDeviceInfoInArchives(): Preference<Boolean>
+    fun includeAppInfoInExports(): Preference<Boolean>
+    fun stopLoggingOnBackExit(): Preference<Boolean>
+    fun exportLogsAsTxt(): Preference<Boolean>
+}

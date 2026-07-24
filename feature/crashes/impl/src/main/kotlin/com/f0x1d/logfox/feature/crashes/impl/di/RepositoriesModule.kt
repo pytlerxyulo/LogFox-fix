@@ -1,0 +1,46 @@
+package com.f0x1d.logfox.feature.crashes.impl.di
+
+import com.f0x1d.logfox.feature.crashes.api.data.CrashDetectingRepository
+import com.f0x1d.logfox.feature.crashes.api.data.CrashExportRepository
+import com.f0x1d.logfox.feature.crashes.api.data.CrashLogRepository
+import com.f0x1d.logfox.feature.crashes.api.data.CrashesRepository
+import com.f0x1d.logfox.feature.crashes.api.data.DisabledAppsRepository
+import com.f0x1d.logfox.feature.crashes.impl.data.CrashDetectingRepositoryImpl
+import com.f0x1d.logfox.feature.crashes.impl.data.CrashExportRepositoryImpl
+import com.f0x1d.logfox.feature.crashes.impl.data.CrashLogRepositoryImpl
+import com.f0x1d.logfox.feature.crashes.impl.data.CrashesRepositoryImpl
+import com.f0x1d.logfox.feature.crashes.impl.data.DisabledAppsRepositoryImpl
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal interface RepositoriesModule {
+
+    @Binds
+    fun bindCrashesRepository(
+        impl: CrashesRepositoryImpl,
+    ): CrashesRepository
+
+    @Binds
+    fun bindCrashLogRepository(
+        impl: CrashLogRepositoryImpl,
+    ): CrashLogRepository
+
+    @Binds
+    fun bindDisabledAppsRepository(
+        impl: DisabledAppsRepositoryImpl,
+    ): DisabledAppsRepository
+
+    @Binds
+    fun bindCrashDetectingRepository(
+        impl: CrashDetectingRepositoryImpl,
+    ): CrashDetectingRepository
+
+    @Binds
+    fun bindCrashExportRepository(
+        impl: CrashExportRepositoryImpl,
+    ): CrashExportRepository
+}

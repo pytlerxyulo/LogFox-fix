@@ -1,0 +1,1 @@
+LogCat readers are allowed to be beautiful and useful!

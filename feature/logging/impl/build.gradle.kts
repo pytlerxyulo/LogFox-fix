@@ -1,0 +1,18 @@
+plugins {
+    alias(libs.plugins.logfox.android.feature)
+}
+
+android.namespace = "com.f0x1d.logfox.feature.logging.impl"
+
+dependencies {
+    api(projects.feature.logging.api)
+
+    implementation(projects.core.di)
+    implementation(projects.feature.export.api)
+    implementation(projects.feature.datetime.api)
+    implementation(projects.feature.preferences.api)
+    implementation(projects.feature.terminals.api)
+
+    implementation(libs.androidx.documentfile)
+    implementation(libs.timber)
+}

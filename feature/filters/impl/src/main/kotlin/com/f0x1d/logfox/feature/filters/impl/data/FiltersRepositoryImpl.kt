@@ -1,0 +1,123 @@
+package com.f0x1d.logfox.feature.filters.impl.data
+
+import com.f0x1d.logfox.core.di.IODispatcher
+import com.f0x1d.logfox.feature.database.api.data.UserFilterDataSource
+import com.f0x1d.logfox.feature.filters.api.data.FiltersRepository
+import com.f0x1d.logfox.feature.filters.api.model.UserFilter
+import com.f0x1d.logfox.feature.filters.impl.mapper.toDomainModel
+import com.f0x1d.logfox.feature.filters.impl.mapper.toEntity
+import com.f0x1d.logfox.feature.logging.api.model.LogLevel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+
+internal class FiltersRepositoryImpl @Inject constructor(
+    private val userFilterDataSource: UserFilterDataSource,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher,
+) : FiltersRepository {
+
+    override fun getAllEnabledAsFlow(): Flow<List<UserFilter>> = userFilterDataSource.getAllEnabledAsFlow()
+        .map { list -> list.map { it.toDomainModel() } }
+        .distinctUntilChanged()
+        .flowOn(ioDispatcher)
+
+    override suspend fun create(
+        name: String?,
+        including: Boolean,
+        enabled: Boolean,
+        enabledLogLevels: List<LogLevel>,
+        uid: String?,
+        pid: String?,
+        tid: String?,
+        packageName: String?,
+        tag: String?,
+        content: String?,
+    ) = createAll(
+        listOf(
+            UserFilter(
+                name = name?.nullIfBlank(),
+                including = including,
+                enabled = enabled,
+                allowedLevels = enabledLogLevels,
+                uid = uid?.nullIfBlank(),
+                pid = pid?.nullIfBlank(),
+                tid = tid?.nullIfBlank(),
+                packageName = packageName?.nullIfBlank(),
+                tag = tag?.nullIfBlank(),
+                content = content?.nullIfBlank(),
+            ),
+        ),
+    )
+
+    override suspend fun createAll(userFilters: List<UserFilter>) = withContext(ioDispatcher) {
+        userFilterDataSource.insert(userFilters.map { it.toEntity() })
+    }
+
+    override suspend fun switch(userFilter: UserFilter, checked: Boolean) = update {
+        userFilter.copy(enabled = checked)
+    }
+
+    override suspend fun update(
+        userFilter: UserFilter,
+        name: String?,
+        including: Boolean,
+        enabled: Boolean,
+        enabledLogLevels: List<LogLevel>,
+        uid: String?,
+        pid: String?,
+        tid: String?,
+        packageName: String?,
+        tag: String?,
+        content: String?,
+    ) = update {
+        userFilter.copy(
+            name = name?.nullIfBlank(),
+            including = including,
+            enabled = enabled,
+            allowedLevels = enabledLogLevels,
+            uid = uid?.nullIfBlank(),
+            pid = pid?.nullIfBlank(),
+            tid = tid?.nullIfBlank(),
+            packageName = packageName?.nullIfBlank(),
+            tag = tag?.nullIfBlank(),
+            content = content?.nullIfBlank(),
+        )
+    }
+
+    private suspend fun update(newValue: () -> UserFilter) = update(newValue())
+
+    override fun getAllAsFlow(): Flow<List<UserFilter>> = userFilterDataSource.getAllAsFlow()
+        .map { list -> list.map { it.toDomainModel() } }
+        .distinctUntilChanged()
+        .flowOn(ioDispatcher)
+
+    override fun getByIdAsFlow(id: Long): Flow<UserFilter?> = userFilterDataSource.getByIdAsFlow(id)
+        .map { it?.toDomainModel() }
+        .flowOn(ioDispatcher)
+
+    override suspend fun getAll(): List<UserFilter> = withContext(ioDispatcher) {
+        userFilterDataSource.getAll().map { it.toDomainModel() }
+    }
+
+    override suspend fun getById(id: Long): UserFilter? = withContext(ioDispatcher) {
+        userFilterDataSource.getById(id)?.toDomainModel()
+    }
+
+    override suspend fun update(item: UserFilter) = withContext(ioDispatcher) {
+        userFilterDataSource.update(item.toEntity())
+    }
+
+    override suspend fun delete(item: UserFilter) = withContext(ioDispatcher) {
+        userFilterDataSource.delete(item.toEntity())
+    }
+
+    override suspend fun clear() = withContext(ioDispatcher) {
+        userFilterDataSource.deleteAll()
+    }
+
+    private fun String.nullIfBlank() = takeIf { it.isNotBlank() }
+}
